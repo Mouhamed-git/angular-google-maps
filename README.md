@@ -7,7 +7,7 @@ _You can see more at https://github.com/angular/components/tree/main/src/google-
 
 ![Alt Text](/src/assets/app.gif)
 
-Angular Project Architecture
+## Angular Project Architecture
 
 ```bash
 ├── README.md
