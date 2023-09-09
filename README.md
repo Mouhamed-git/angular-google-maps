@@ -1,6 +1,6 @@
 # Google Map with Angular App
 
-## This repository show how to integrate Google Maps, Markers, Map Info Windows and Polyline in Angular Project.
+## This repository show how to integrate Google Maps, Markers, Map Info Window and Polyline in Angular Project.
 _You can see more at https://github.com/angular/components/tree/main/src/google-maps_
 
 ![Alt Text](/src/assets/app.gif)
