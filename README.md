@@ -1,9 +1,9 @@
 # Google Map with Angular App
 
-## This repository how to integrate Google Map,s Marker and Polyline in Angular Project.
+## This repository how to integrate Google Maps, Marker and Polyline in Angular Project.
 You can see more at https://github.com/angular/components/tree/main/src/google-maps
 
-### User can select city form and city to, and we add makers and draw polyline.
+### User can select city form and city to, and we add and show marker info and draw polyline between two cities.
 
 ![Alt Text](/src/assets/app.gif)
 
