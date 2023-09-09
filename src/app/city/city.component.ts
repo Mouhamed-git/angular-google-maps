@@ -16,7 +16,8 @@ import {LocationResponse} from "../core/response/location.response";
     CommonModule,
     FormsModule,
     MapsComponent,
-    MatFormFieldModule,MatSelectModule,
+    MatFormFieldModule,
+    MatSelectModule,
   ],
   styles: [
     `
