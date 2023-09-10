@@ -113,31 +113,31 @@ export class MapsComponent implements OnInit{
     });
   }
 
-  addMarker(location: LocationResponse) {
+  addMarker(location: LocationResponse): void {
     const marker = this.loadMarker(location);
     this.markers.add(marker);
     this.moveMapView();
   }
 
-  moveMap(event: any) {
+  moveMap(event: any): void {
     if (event.latLng != null) {
       this.mapOptions.center = (event.latLng.toJSON());
     }
   }
 
-  moveMapView() {
+  moveMapView(): void {
     this.mapOptions.center = {
       lat: this.locationFrom?.latitude ?? 0,
       lng: this.locationFrom?.longitude ?? 0
     }
   }
 
-  openMapInfo(content: string, marker: MapMarker) {
+  openMapInfo(content: string, marker: MapMarker): void {
     this.infoContent = content;
     this.infoWindow?.open(marker);
   }
 
-  addPolyline() {
+  addPolyline(): void {
     const markers = Array.from(this.markers).slice(-2);
     const path: google.maps.LatLng[] = [];
     markers.forEach((marker, index) => {

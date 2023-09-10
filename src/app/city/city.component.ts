@@ -62,11 +62,11 @@ export default class CityComponent implements OnInit{
   locationFrom?: LocationResponse;
   locationTo?: LocationResponse;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getAllCities();
   }
 
-  getAllCities() {
+  getAllCities(): void {
     let request: CityRequest = new CityRequest();
     request.order = 'asc';
     request.orderBy = 'name';
@@ -80,7 +80,7 @@ export default class CityComponent implements OnInit{
     });
   }
 
-  getLatLngCityFrom(citySelected: string) {
+  getLatLngCityFrom(citySelected: string): void {
     this.service.findLatLng(citySelected).subscribe({
       next: (data) => {
         this.locationFrom = data[0];
@@ -89,7 +89,7 @@ export default class CityComponent implements OnInit{
     });
   }
 
-  getLatLngCityTo(citySelected: string) {
+  getLatLngCityTo(citySelected: string): void {
     this.service.findLatLng(citySelected).subscribe({
       next: (data) => {
         this.locationTo = data[0];

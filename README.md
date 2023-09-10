@@ -246,94 +246,148 @@ export class MapsComponent {}
 8. CityComponent
 ```typescript
 @Component({
-  selector: 'app-city',
+  selector: 'app-maps',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MapsComponent,
-    MatFormFieldModule,
-    MatSelectModule,
-  ],
-  styles: [
-    `
-    `
-  ],
+  imports: [CommonModule, GoogleMapsModule],
   template: `
-    <div class="d-flex justify-content-around align-items-start">
-      <div>
-        <form class="form" >
-          <mat-form-field appearance="outline">
-            <mat-label>Ville de départ</mat-label>
-            <mat-select name="cityFrom" [(ngModel)]="cityFrom" (ngModelChange)="getLatLngCityFrom($event)">
-              <mat-option *ngFor="let city of cities" [value]="city.city">{{city.city}}</mat-option>
-            </mat-select>
-          </mat-form-field><br>
+    <google-map
+      [height]="height"
+      [width]="width"
+      [zoom]="mapOptions.zoom!"
+      [options]="mapOptions"
+      [center]="mapOptions.center!"
+      (click)="moveMap($event)">
 
-          <mat-form-field appearance="fill">
-            <mat-label>Ville de d'arrivé</mat-label>
-            <mat-select name="cityTo" [(ngModel)]="cityTo" (ngModelChange)="getLatLngCityTo($event)">
-              <mat-option *ngFor="let city of cities" [value]="city.city">{{city.city}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </form>
-      </div>
+      <map-marker
+        #mapMarker="mapMarker"
+        *ngFor="let marker of markers"
+        [position]="marker.getPosition()!"
+        [title]="marker.getTitle()!"
+        (mapClick)="openMapInfo(marker.getTitle()!, mapMarker)"
+      >
+      </map-marker>
 
-      <div>
-        <app-maps
-            [locationFrom]="this.locationFrom"
-            [locationTo]="this.locationTo"
-        ></app-maps>
-      </div>
-    </div>
+      <map-info-window>{{ infoContent }}</map-info-window>
+
+      <map-polyline [options]="polylineOptions" ></map-polyline>
+    </google-map>
+
   `,
-
+  styles: [
+  ]
 })
-export default class CityComponent implements OnInit{
-  private service: CityService = inject(CityService);
+export class MapsComponent implements OnInit{
 
-  cities: CityResponse[] = [];
-  cityFrom: string | null = null;
-  cityTo: string | null = null;
-  locationFrom?: LocationResponse;
-  locationTo?: LocationResponse;
+  @ViewChild(MapInfoWindow, { static: false }) infoWindow?: MapInfoWindow;
 
-  ngOnInit() {
-    this.getAllCities();
+  @Input() locationFrom?: LocationResponse;
+  @Input() locationTo?: LocationResponse;
+
+  height: string = '600px';
+  width: string = '600px';
+
+  mapOptions: google.maps.MapOptions = {
+    center: {
+      lat: 0,
+      lng: 0
+    },
+    mapId: 'customMap',
+    scrollwheel: false,
+    disableDoubleClickZoom: true,
+    mapTypeId: 'hybrid',
+    zoom: 6,
+    maxZoom: 15,
+    minZoom: 4,
+  };
+
+  markers: Set<google.maps.Marker> = new Set();
+
+  infoContent: string = '';
+
+  polylineOptions: google.maps.PolylineOptions = {
+    path: [],
+    strokeColor: '#F78F08',
+    strokeOpacity: 1.0,
+    strokeWeight: 5,
+    draggable: false
   }
 
-  getAllCities() {
-    let request: CityRequest = new CityRequest();
-    request.order = 'asc';
-    request.orderBy = 'name';
-    request.country = 'canada';
+  ngOnInit(): void {
+    this.getCurrentPosition();
+  }
 
-    this.service.findAllCities(request).subscribe({
-      next: (data) => {
-        this.cities = data;
-      },
-      error: err => console.log(err)
+  getCurrentPosition(): void {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.mapOptions.center = {
+        lat: position?.coords.latitude ?? 46.788,
+        lng: position?.coords.longitude ?? -71.3893,
+      }
     });
   }
 
-  getLatLngCityFrom(citySelected: string) {
-    this.service.findLatLng(citySelected).subscribe({
-      next: (data) => {
-        this.locationFrom = data[0];
+  ngOnChanges(): void {
+    if (this.locationFrom) {
+      this.addMarker(this.locationFrom);
+    }
+
+    if (this.locationTo) {
+      this.addMarker(this.locationTo);
+    }
+
+    if (this.hasLocation) {
+      this.addPolyline();
+    }
+  }
+
+  get hasLocation(): boolean {
+    return !!this.locationFrom && !!this.locationTo;
+  }
+
+  loadMarker(location?: LocationResponse): google.maps.Marker {
+    return new google.maps.Marker({
+      position: {
+        lat: location?.latitude ?? 0,
+        lng: location?.longitude ?? 0
       },
-      error: (err) => console.log(err)
+      title: location?.name ?? '',
+      animation: google.maps.Animation.DROP,
+      draggable: false,
     });
   }
 
-  getLatLngCityTo(citySelected: string) {
-    this.service.findLatLng(citySelected).subscribe({
-      next: (data) => {
-        this.locationTo = data[0];
-      },
-      error: (err) => console.error(err)
-    });
+  addMarker(location: LocationResponse): void {
+    const marker = this.loadMarker(location);
+    this.markers.add(marker);
+    this.moveMapView();
   }
 
+  moveMap(event: any): void {
+    if (event.latLng != null) {
+      this.mapOptions.center = (event.latLng.toJSON());
+    }
+  }
+
+  moveMapView(): void {
+    this.mapOptions.center = {
+      lat: this.locationFrom?.latitude ?? 0,
+      lng: this.locationFrom?.longitude ?? 0
+    }
+  }
+
+  openMapInfo(content: string, marker: MapMarker): void {
+    this.infoContent = content;
+    this.infoWindow?.open(marker);
+  }
+
+  addPolyline(): void {
+    const markers = Array.from(this.markers).slice(-2);
+    const path: google.maps.LatLng[] = [];
+    markers.forEach((marker, index) => {
+      path.push(new google.maps.LatLng(marker.getPosition()!));
+    });
+    this.polylineOptions = { ...this.polylineOptions, path };
+    this.markers = new Set(markers);
+  }
 }
 ```
 
