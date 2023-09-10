@@ -67,10 +67,14 @@ export class MapsComponent implements OnInit{
     strokeColor: '#F78F08',
     strokeOpacity: 1.0,
     strokeWeight: 5,
-    draggable: false,
+    draggable: false
   }
 
   ngOnInit(): void {
+    this.getCurrentPosition();
+  }
+
+  getCurrentPosition(): void {
     navigator.geolocation.getCurrentPosition((position) => {
       this.mapOptions.center = {
         lat: position?.coords.latitude ?? 46.788,
@@ -81,11 +85,11 @@ export class MapsComponent implements OnInit{
 
   ngOnChanges(): void {
     if (this.locationFrom) {
-      this.addMarker(this.locationFrom)
+      this.addMarker(this.locationFrom);
     }
 
     if (this.locationTo) {
-      this.addMarker(this.locationTo)
+      this.addMarker(this.locationTo);
     }
 
     if (this.hasLocation) {
@@ -111,7 +115,7 @@ export class MapsComponent implements OnInit{
 
   addMarker(location: LocationResponse) {
     const marker = this.loadMarker(location);
-    this.markers.add(marker)
+    this.markers.add(marker);
     this.moveMapView();
   }
 

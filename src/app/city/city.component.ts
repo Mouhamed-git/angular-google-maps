@@ -63,7 +63,7 @@ export default class CityComponent implements OnInit{
   locationTo?: LocationResponse;
 
   ngOnInit() {
-    this.getAllCities()
+    this.getAllCities();
   }
 
   getAllCities() {
@@ -97,6 +97,5 @@ export default class CityComponent implements OnInit{
       error: (err) => console.error(err)
     });
   }
-
 
 }

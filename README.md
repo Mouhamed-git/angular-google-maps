@@ -1,4 +1,4 @@
-# Google Map with Angular App
+# Google Maps with Angular App
 
 ## This repository show how to integrate Google Maps, Markers, Map Info Window and Polyline in Angular Project.
 _You can see more at https://github.com/angular/components/tree/main/src/google-maps_
@@ -72,20 +72,21 @@ export class MapsComponent {}
 ```javascript 
 <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
 ```
-5. MapsComponent Code
+
+5. MapsComponent 
 ```typescript
 @Component({
   selector: 'app-maps',
   standalone: true,
   imports: [CommonModule, GoogleMapsModule],
   template: `
-      <google-map 
-        [height]="height"
-        [width]="width"
-        [zoom]="mapOptions.zoom!"
-        [options]="mapOptions"
-        [center]="mapOptions.center!"
-        (click)="moveMap($event)">
+    <google-map
+      [height]="height"
+      [width]="width"
+      [zoom]="mapOptions.zoom!"
+      [options]="mapOptions"
+      [center]="mapOptions.center!"
+      (click)="moveMap($event)">
 
       <map-marker
         #mapMarker="mapMarker"
@@ -102,7 +103,8 @@ export class MapsComponent {}
     </google-map>
 
   `,
-  styles: []
+  styles: [
+  ]
 })
 export class MapsComponent implements OnInit{
 
@@ -137,10 +139,14 @@ export class MapsComponent implements OnInit{
     strokeColor: '#F78F08',
     strokeOpacity: 1.0,
     strokeWeight: 5,
-    draggable: false,
+    draggable: false
   }
 
   ngOnInit(): void {
+    this.getCurrentPosition();
+  }
+
+  getCurrentPosition(): void {
     navigator.geolocation.getCurrentPosition((position) => {
       this.mapOptions.center = {
         lat: position?.coords.latitude ?? 46.788,
@@ -151,11 +157,11 @@ export class MapsComponent implements OnInit{
 
   ngOnChanges(): void {
     if (this.locationFrom) {
-      this.addMarker(this.locationFrom)
+      this.addMarker(this.locationFrom);
     }
 
     if (this.locationTo) {
-      this.addMarker(this.locationTo)
+      this.addMarker(this.locationTo);
     }
 
     if (this.hasLocation) {
@@ -181,7 +187,7 @@ export class MapsComponent implements OnInit{
 
   addMarker(location: LocationResponse) {
     const marker = this.loadMarker(location);
-    this.markers.add(marker)
+    this.markers.add(marker);
     this.moveMapView();
   }
 
@@ -237,7 +243,7 @@ ng g c city--standalone --inline-style --inline-template --skip-tests
 export class MapsComponent {}
 ```
 
-8. CityComponent code
+8. CityComponent
 ```typescript
 @Component({
   selector: 'app-city',
@@ -247,9 +253,12 @@ export class MapsComponent {}
     FormsModule,
     MapsComponent,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
   ],
-  styles: [],
+  styles: [
+    `
+    `
+  ],
   template: `
     <div class="d-flex justify-content-around align-items-start">
       <div>
@@ -286,12 +295,11 @@ export default class CityComponent implements OnInit{
   cities: CityResponse[] = [];
   cityFrom: string | null = null;
   cityTo: string | null = null;
-
   locationFrom?: LocationResponse;
   locationTo?: LocationResponse;
 
   ngOnInit() {
-    this.getAllCities()
+    this.getAllCities();
   }
 
   getAllCities() {
@@ -314,7 +322,7 @@ export default class CityComponent implements OnInit{
         this.locationFrom = data[0];
       },
       error: (err) => console.log(err)
-    })
+    });
   }
 
   getLatLngCityTo(citySelected: string) {
@@ -323,7 +331,7 @@ export default class CityComponent implements OnInit{
         this.locationTo = data[0];
       },
       error: (err) => console.error(err)
-    })
+    });
   }
 
 }
